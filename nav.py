@@ -18,6 +18,11 @@ cam = cv2.VideoCapture(0)
 KNOWN_DISTANCE = 10.5
 KNOWN_WIDTH = 3
 focalLength = 675.634689331
+width = cam.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
+height = cam.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+
+center = [width/2, height/2]
+print center
 
 while True:
     ret, img = cam.read()
@@ -38,7 +43,25 @@ while True:
         cv2.putText(img, "%.2fft" % (inches / 12),
                     (img.shape[1] - 200, img.shape[0] - 20), cv2.FONT_HERSHEY_SIMPLEX,
                     2.0, (0, 255, 0), 3)
+        widthHalf = marker[1][0]/2
+        heightHalf = marker[1][1]/2
+        destCenter = [int(marker[0][0] + widthHalf), int(marker[0][1] + heightHalf)]
 
+        horizontalDiff = center[0]-destCenter[0]
+        distRemain = inches - 10
+        #print horizontalDiff
+        if distRemain < 0:
+            print "Command: STOP"
+        elif horizontalDiff > 0:
+            print "Command: Left Skid Turn    Distance Remain: ", distRemain
+        elif horizontalDiff < 0:
+            print "Command: Right Skid Turn   Distance Remain: ", distRemain
+        elif horizontalDiff == 0:
+            print "Command: Forward    Distance Remain: ", distRemain
+        else:
+            print "Err"
+    else:
+        print "Destination not Found, Command: Turn Camera"
     cv2.imshow("image", img)
 
     if cv2.waitKey(1) == 27:
