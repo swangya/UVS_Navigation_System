@@ -4,8 +4,11 @@ import numpy as np
 def find_marker(image):
     edged = cv2.Canny(image, 35, 125)
     (cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    c = max(cnts, key=cv2.contourArea)
-    return cv2.minAreaRect(c)
+    if cnts != []:
+        c = max(cnts, key=cv2.contourArea)
+        return cv2.minAreaRect(c)
+    else:
+        return None
 
 def distance_to_camera(knownWidth, focalLength, perWidth):
     return (knownWidth * focalLength) / perWidth
@@ -27,13 +30,14 @@ while True:
     temp = cv2.GaussianBlur(mask, (5, 5), 0)
 
     marker = find_marker(temp)
-    inches = distance_to_camera(KNOWN_WIDTH, focalLength, marker[1][0])
+    if marker != None:
+        inches = distance_to_camera(KNOWN_WIDTH, focalLength, marker[1][0])
 
-    box = np.int0(cv2.cv.BoxPoints(marker))
-    cv2.drawContours(img, [box], -1, (0, 255, 0), 2)
-    cv2.putText(img, "%.2fft" % (inches / 12),
-                (img.shape[1] - 200, img.shape[0] - 20), cv2.FONT_HERSHEY_SIMPLEX,
-                2.0, (0, 255, 0), 3)
+        box = np.int0(cv2.cv.BoxPoints(marker))
+        cv2.drawContours(img, [box], -1, (0, 255, 0), 2)
+        cv2.putText(img, "%.2fft" % (inches / 12),
+                    (img.shape[1] - 200, img.shape[0] - 20), cv2.FONT_HERSHEY_SIMPLEX,
+                    2.0, (0, 255, 0), 3)
 
     cv2.imshow("image", img)
 
