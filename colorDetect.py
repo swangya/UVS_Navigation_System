@@ -11,12 +11,11 @@ def find_marker(image):
 cam = cv2.VideoCapture(0)
 
 while True:
-    print("this")
     ret, img = cam.read()
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    lower_range = np.array([0, 154, 125])
-    upper_range = np.array([13, 235, 215])
+    lower_range = np.array([0, 63, 35])
+    upper_range = np.array([32, 255, 185])
 
     mask = cv2.inRange(hsv, lower_range, upper_range)
     temp = cv2.GaussianBlur(mask, (5, 5), 0)
